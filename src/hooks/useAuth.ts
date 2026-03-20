@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { IUser } from '../types/IUser';
 
 export interface AuthState {
   isLoggedIn: boolean;
@@ -10,19 +11,18 @@ export interface AuthState {
   isLoading: boolean;
 }
 
-export function useAuth(): AuthState {
+export function useAuth(currentPathname: string): AuthState {
   const [authState, setAuthState] = useState<AuthState>(() => {
 
     if (typeof window !== 'undefined') {
-      const userId = localStorage.getItem('userId');
-      const userName = localStorage.getItem('userName');
-      const userEmail = localStorage.getItem('userEmail');
+      const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('token');
       
       return {
-        isLoggedIn: !!userId,
-        userId: userId || null,
-        userName: userName || '',
-        userEmail: userEmail || '',
+        isLoggedIn: !!user && !!token,
+        userId: user.id || null,
+        userName: user.name  || '',
+        userEmail: user.email || '',
         isLoading: false,
       };
     }
@@ -38,28 +38,26 @@ export function useAuth(): AuthState {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const userId = localStorage.getItem('userId');
-      const userName = localStorage.getItem('userName');
-      const userEmail = localStorage.getItem('userEmail');
+      const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
+      const token = localStorage.getItem('token');
       
       setAuthState({
-        isLoggedIn: !!userId,
-        userId: userId || null,
-        userName: userName || '',
-        userEmail: userEmail || '',
+        isLoggedIn: !!user.id && !!token,
+        userId: user.id || null,
+        userName: user.name || '',
+        userEmail: user.email || '',
         isLoading: false,
       });
 
       const handleStorageChange = () => {
-        const userId = localStorage.getItem('userId');
-        const userName = localStorage.getItem('userName');
-        const userEmail = localStorage.getItem('userEmail');
+        const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
+        const token = localStorage.getItem('token');
         
         setAuthState({
-          isLoggedIn: !!userId,
-          userId: userId || null,
-          userName: userName || '',
-          userEmail: userEmail || '',
+          isLoggedIn: !!user.id && !!token,
+          userId: user.id || null,
+          userName: user.name || '',
+          userEmail: user.email || '',
           isLoading: false,
         });
       };
@@ -70,14 +68,13 @@ export function useAuth(): AuthState {
         window.removeEventListener('storage', handleStorageChange);
       };
     }
-  }, []);
+  }, [currentPathname]);
 
   return authState;
 }
 
 export function logout() {
-  localStorage.removeItem('userId');
-  localStorage.removeItem('userName');
-  localStorage.removeItem('userEmail');
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
   window.location.href = '/';
 }

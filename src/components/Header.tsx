@@ -1,13 +1,14 @@
 'use client';
 
 import { useAuth, logout } from '@src/hooks/useAuth';
-
+import {usePathname} from "next/navigation"
 interface HeaderProps {
   showAuth?: boolean;
 }
 
 export function Header({ showAuth = true }: HeaderProps) {
-  const { isLoggedIn, userName, isLoading } = useAuth();
+  const pathname = usePathname();
+  const { isLoggedIn, userName, isLoading } = useAuth(pathname);
 
   return (
     <header className="bg-white shadow-sm sticky top-0 z-10">
