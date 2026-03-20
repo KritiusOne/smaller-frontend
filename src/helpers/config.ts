@@ -15,7 +15,7 @@ const config = {
   },
 
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3000',
+    baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:4200',
     timeout: parseInt(process.env.NEXT_PUBLIC_API_TIMEOUT || '10000', 10),
   },
 
