@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link } from '@src/types';
+import { Link } from '@src/types/mockTypes';
 import { getLinksByUserId, getUserStats } from '@src/helpers/mocks/links';
 import { getUserById } from '@src/helpers/mocks/users';
 import { useRouter } from 'next/navigation';
@@ -21,9 +21,11 @@ export default function ProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const id = localStorage.getItem('userId');
-    const name = localStorage.getItem('userName');
-    const email = localStorage.getItem('userEmail');
+    const userInfo = localStorage.getItem('user');
+    const user = userInfo ? JSON.parse(userInfo) : null;
+    const id = user?.id || null;
+    const name = user?.name || null;
+    const email = user?.email || null;
 
     if (!id) {
       router.push('/login');
@@ -34,11 +36,10 @@ export default function ProfilePage() {
     setUserName(name || '');
     setUserEmail(email || '');
 
-    // Cargar links del usuario
     const links = getLinksByUserId(id);
     setUserLinks(links.sort((a: Link, b: Link) => b.createdAt.getTime() - a.createdAt.getTime()));
 
-    // Cargar estadísticas
+    
     const userStats = getUserStats(id);
     setStats(userStats);
 
@@ -57,6 +58,9 @@ export default function ProfilePage() {
     return new Intl.NumberFormat('es-ES').format(num);
   };
 
+  const handleCreateFirstLink = () => {
+    router.push('/url');
+  }
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -106,7 +110,10 @@ export default function ProfilePage() {
           {userLinks.length === 0 ? (
             <div className="p-12 text-center">
               <p className="text-gray-500">No tienes links creados todavía</p>
-              <button className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
+              <button 
+                className="mt-4 px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                onClick={handleCreateFirstLink}
+              >
                 Crear mi primer link
               </button>
             </div>

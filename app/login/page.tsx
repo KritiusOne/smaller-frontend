@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import {useRouter} from 'next/navigation';
-import { LoginCredentials } from '@src/types';
+import { LoginCredentials } from '@src/types/mockTypes';
 import { validateCredentials } from '@src/helpers/mocks/users';
+import { authService } from '@/src/service/authService';
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState<LoginCredentials>({
@@ -19,17 +20,14 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
 
-    
-    await new Promise(resolve => setTimeout(resolve, 500)); // Test delay, remove when connect with API
-
-    const user = validateCredentials(credentials.email, credentials.password);
-
+    const user = await authService.SignIn(credentials.email, credentials.password);
+    console.log("USER")
+    console.log(user)
     if (user) {
-      localStorage.setItem('userId', user.id);
-      localStorage.setItem('userName', user.name);
-      localStorage.setItem('userEmail', user.email);
+      localStorage.setItem('user', JSON.stringify(user.user));
+      localStorage.setItem('token', user.token);
       
-      router.push('/profile'); // redirect
+      router.push('/profile');
     } else {
       setError('Correo o contraseña incorrectos');
     }
@@ -38,7 +36,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -92,15 +90,6 @@ export default function LoginPage() {
             {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </button>
         </form>
-
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-xs text-gray-600 mb-2 font-semibold">Usuarios de prueba:</p>
-          <ul className="text-xs text-gray-500 space-y-1">
-            <li>• juan@example.com / password123</li>
-            <li>• maria@example.com / password123</li>
-            <li>• demo@example.com / demo123</li>
-          </ul>
-        </div>
 
         <div className="mt-6 text-center">
           <a href="/" className="text-sm text-indigo-600 hover:text-indigo-700">

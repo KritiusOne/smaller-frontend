@@ -12,35 +12,19 @@ export interface AuthState {
 }
 
 export function useAuth(currentPathname: string): AuthState {
-  const [authState, setAuthState] = useState<AuthState>(() => {
-
-    if (typeof window !== 'undefined') {
-      const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const token = localStorage.getItem('token');
-      
-      return {
-        isLoggedIn: !!user && !!token,
-        userId: user.id || null,
-        userName: user.name  || '',
-        userEmail: user.email || '',
-        isLoading: false,
-      };
-    }
-    
-    return {
-      isLoggedIn: false,
-      userId: null,
-      userName: '',
-      userEmail: '',
-      isLoading: true,
-    };
+  const [authState, setAuthState] = useState<AuthState>({
+    isLoggedIn: false,
+    userId: null,
+    userName: '',
+    userEmail: '',
+    isLoading: true,
   });
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
       const token = localStorage.getItem('token');
-      
+
       setAuthState({
         isLoggedIn: !!user.id && !!token,
         userId: user.id || null,
@@ -50,23 +34,32 @@ export function useAuth(currentPathname: string): AuthState {
       });
 
       const handleStorageChange = () => {
-        const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
-        const token = localStorage.getItem('token');
-        
-        setAuthState({
-          isLoggedIn: !!user.id && !!token,
-          userId: user.id || null,
-          userName: user.name || '',
-          userEmail: user.email || '',
-          isLoading: false,
-        });
-      };
+        try {
+          const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
+          const token = localStorage.getItem('token');
+          setAuthState({
+            isLoggedIn: !!user.id && !!token,
+            userId: user.id || null,
+            userName: user.name || '',
+            userEmail: user.email || '',
+            isLoading: false,
+          });
+          window.addEventListener('storage', handleStorageChange);
 
-      window.addEventListener('storage', handleStorageChange);
-      
-      return () => {
-        window.removeEventListener('storage', handleStorageChange);
-      };
+          return () => {
+            window.removeEventListener('storage', handleStorageChange);
+          };
+        } catch (error) {
+          console.error('Error parsing user data from localStorage:', error);
+          setAuthState({
+            isLoggedIn: false,
+            userId: null,
+            userName: '',
+            userEmail: '',
+            isLoading: false,
+          });
+        }
+      }
     }
   }, [currentPathname]);
 
