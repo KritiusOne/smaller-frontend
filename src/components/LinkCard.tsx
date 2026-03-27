@@ -1,4 +1,4 @@
-import { Link } from '@src/types';
+import { Link } from '@src/types/mockTypes';
 
 interface LinkCardProps {
   link: Link;

@@ -1,4 +1,4 @@
-import { Link, TrendingLink } from '@src/types';
+import { Link, TrendingLink } from '@src/types/mockTypes';
 import { mockUsers } from './users';
 
 export const mockLinks: Link[] = [

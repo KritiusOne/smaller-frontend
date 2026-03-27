@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { TrendingLink } from '@src/types/index';
+import { TrendingLink } from '@src/types/mockTypes';
 import { getTrendingLinks } from '@src/helpers/mocks/links';
 import { useAuth } from '@src/hooks/useAuth';
 
