@@ -5,6 +5,7 @@ import {useRouter} from 'next/navigation';
 import { LoginCredentials } from '@src/types/mockTypes';
 import { validateCredentials } from '@src/helpers/mocks/users';
 import { authService } from '@/src/service/authService';
+import { useUserStore } from '@/src/zustand/userState';
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState<LoginCredentials>({
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const {logIn} = useUserStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,12 +23,11 @@ export default function LoginPage() {
     setLoading(true);
 
     const user = await authService.SignIn(credentials.email, credentials.password);
-    console.log("USER")
-    console.log(user)
     if (user) {
       localStorage.setItem('user', JSON.stringify(user.user));
       localStorage.setItem('token', user.token);
       
+      logIn(user.user.firebaseUid, user.user.name, user.user.email);
       router.push('/profile');
     } else {
       setError('Correo o contraseña incorrectos');

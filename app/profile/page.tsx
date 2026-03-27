@@ -1,16 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Link } from '@src/types/mockTypes';
 import { getLinksByUserId, getUserStats } from '@src/helpers/mocks/links';
-import { getUserById } from '@src/helpers/mocks/users';
 import { useRouter } from 'next/navigation';
+import { useUserStore } from '@src/zustand/userState';
+import { getURlsByUser } from '@/src/service/urlService';
 
 export default function ProfilePage() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>('');
-  const [userEmail, setUserEmail] = useState<string>('');
-  const [userLinks, setUserLinks] = useState<Link[]>([]);
+  const { firebaseUid, email: userEmail, userLinks, setURLs, logIn } = useUserStore();
   const [stats, setStats] = useState({
     totalLinks: 0,
     activeLinks: 0,
@@ -21,30 +18,33 @@ export default function ProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const userInfo = localStorage.getItem('user');
-    const user = userInfo ? JSON.parse(userInfo) : null;
-    const id = user?.id || null;
-    const name = user?.name || null;
-    const email = user?.email || null;
-
-    if (!id) {
-      router.push('/login');
-      return;
-    }
-
-    setUserId(id);
-    setUserName(name || '');
-    setUserEmail(email || '');
-
-    const links = getLinksByUserId(id);
-    setUserLinks(links.sort((a: Link, b: Link) => b.createdAt.getTime() - a.createdAt.getTime()));
-
+    const fetchData = async () => {
+      try {
+        const userInfo = localStorage.getItem('user');
+        const user = userInfo ? JSON.parse(userInfo) : null;
+        const id = user?.firebaseUid || null;
+        const name = user?.name || null;
+        const email = user?.email || null;
     
-    const userStats = getUserStats(id);
-    setStats(userStats);
-
-    setLoading(false);
-  }, [router]);
+        if (!id) {
+          router.push('/login');
+          return;
+        }
+        if(!firebaseUid || !name || !email){
+          logIn(firebaseUid || user.firebaseUid, name || '', email || '')
+        }
+        setLoading(true)
+        const data = await getURlsByUser(id);
+        console.log(data)
+        setURLs(data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData();
+  }, [router, logIn, setURLs]);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-ES', {
@@ -107,7 +107,7 @@ export default function ProfilePage() {
             <h2 className="text-xl font-semibold text-gray-900">Mis Links Acortados</h2>
           </div>
 
-          {userLinks.length === 0 ? (
+          {!userLinks || userLinks.length == 0 ? (
             <div className="p-12 text-center">
               <p className="text-gray-500">No tienes links creados todavía</p>
               <button 
@@ -116,7 +116,7 @@ export default function ProfilePage() {
               >
                 Crear mi primer link
               </button>
-            </div>
+            </div> 
           ) : (
             <div className="divide-y divide-gray-200">
               {userLinks.map((link) => (
@@ -125,33 +125,20 @@ export default function ProfilePage() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h3 className="text-lg font-semibold text-gray-900">
-                          {link.title || 'Sin título'}
+                          {link.alias || 'Sin título'}
                         </h3>
-                        {link.isActive ? (
-                          <span className="px-2 py-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full">
-                            Activo
-                          </span>
-                        ) : (
-                          <span className="px-2 py-1 text-xs font-semibold bg-gray-100 text-gray-800 rounded-full">
-                            Inactivo
-                          </span>
-                        )}
                       </div>
-                      
-                      {link.description && (
-                        <p className="text-sm text-gray-600 mb-3">{link.description}</p>
-                      )}
 
                       <div className="flex items-center gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Short URL: </span>
                           <a
-                            href={link.shortUrl}
+                            href={link.originalURL}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-indigo-600 hover:text-indigo-700 font-medium"
                           >
-                            {link.shortUrl}
+                            {link.shortURL}
                           </a>
                         </div>
                       </div>
@@ -159,23 +146,13 @@ export default function ProfilePage() {
                       <div className="mt-2 text-xs text-gray-500">
                         <span>Original: </span>
                         <a
-                          href={link.originalUrl}
+                          href={link.originalURL}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-gray-600 hover:text-gray-800 break-all"
                         >
-                          {link.originalUrl}
+                          {link.originalURL}
                         </a>
-                      </div>
-                    </div>
-
-                    <div className="ml-6 text-right">
-                      <div className="text-2xl font-bold text-indigo-600">
-                        {formatNumber(link.clicks)}
-                      </div>
-                      <div className="text-xs text-gray-500">clicks</div>
-                      <div className="mt-2 text-xs text-gray-400">
-                        {formatDate(link.createdAt)}
                       </div>
                     </div>
                   </div>

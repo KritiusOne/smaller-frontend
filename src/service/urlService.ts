@@ -1,5 +1,6 @@
 import axios from "axios";
 import config from "../helpers/config";
+import { IURL } from "../types/IURL";
 
 export const createShortURL = async(url: string, alias?: string)=> {
   const userInfo = localStorage.getItem('user');
@@ -29,7 +30,7 @@ export const createShortURL = async(url: string, alias?: string)=> {
   }
 }
 
-export const getURlsByUser = async(uId: string) => {
+export const getURlsByUser = async(uId: string): Promise<IURL[]> => {
   const token = localStorage.getItem('token');
   try {
     const res = await axios.get(
@@ -41,7 +42,7 @@ export const getURlsByUser = async(uId: string) => {
       }
     );
     console.log(res.data);
-    return res.data;
+    return res.data.urls;
   } catch (error) {
     console.error('Error fetching URLs by user:', error);
     throw error;
