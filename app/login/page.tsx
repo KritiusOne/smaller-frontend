@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import {useRouter} from 'next/navigation';
 import { LoginCredentials } from '@src/types/mockTypes';
-import { validateCredentials } from '@src/helpers/mocks/users';
 import { authService } from '@/src/service/authService';
 import { useUserStore } from '@/src/zustand/userState';
+import { setAuthCookie } from '@/src/helpers/auth/cookies';
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState<LoginCredentials>({
@@ -24,8 +24,7 @@ export default function LoginPage() {
 
     const user = await authService.SignIn(credentials.email, credentials.password);
     if (user) {
-      localStorage.setItem('user', JSON.stringify(user.user));
-      localStorage.setItem('token', user.token);
+      setAuthCookie(user.token);
       
       logIn(user.user.firebaseUid, user.user.name, user.user.email);
       router.push('/profile');

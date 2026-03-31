@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { IUser } from '../types/IUser';
+import { getAuthTokenPayload, hasAuthCookie, removeAuthCookie } from '../helpers/auth/cookies';
+import { useUserStore } from '../zustand/userState';
 
 export interface AuthState {
   isLoggedIn: boolean;
@@ -11,7 +12,8 @@ export interface AuthState {
   isLoading: boolean;
 }
 
-export function useAuth(currentPathname: string): AuthState {
+export function useAuth(currentPathname?: string): AuthState {
+  const { firebaseUid, name, email, logIn } = useUserStore();
   const [authState, setAuthState] = useState<AuthState>({
     isLoggedIn: false,
     userId: null,
@@ -21,53 +23,47 @@ export function useAuth(currentPathname: string): AuthState {
   });
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
-      const token = localStorage.getItem('token');
+    const syncAuthState = () => {
+      const hasCookie = hasAuthCookie();
+      const tokenPayload = hasCookie ? getAuthTokenPayload() : null;
+      const tokenUserId =
+        tokenPayload?.firebaseUid || tokenPayload?.userId || tokenPayload?.id || tokenPayload?.sub || null;
+      const tokenName = tokenPayload?.name || '';
+      const tokenEmail = tokenPayload?.email || '';
+
+      if (hasCookie && !firebaseUid && tokenUserId) {
+        logIn(tokenUserId, tokenName, tokenEmail);
+      }
 
       setAuthState({
-        isLoggedIn: !!user.id && !!token,
-        userId: user.id || null,
-        userName: user.name || '',
-        userEmail: user.email || '',
+        isLoggedIn: hasCookie,
+        userId: firebaseUid || tokenUserId,
+        userName: name || tokenName,
+        userEmail: email || tokenEmail,
         isLoading: false,
       });
+    };
 
-      const handleStorageChange = () => {
-        try {
-          const user: IUser = JSON.parse(localStorage.getItem('user') || '{}');
-          const token = localStorage.getItem('token');
-          setAuthState({
-            isLoggedIn: !!user.id && !!token,
-            userId: user.id || null,
-            userName: user.name || '',
-            userEmail: user.email || '',
-            isLoading: false,
-          });
-          window.addEventListener('storage', handleStorageChange);
+    syncAuthState();
 
-          return () => {
-            window.removeEventListener('storage', handleStorageChange);
-          };
-        } catch (error) {
-          console.error('Error parsing user data from localStorage:', error);
-          setAuthState({
-            isLoggedIn: false,
-            userId: null,
-            userName: '',
-            userEmail: '',
-            isLoading: false,
-          });
-        }
-      }
-    }
-  }, [currentPathname]);
+    window.addEventListener('auth-cookie-changed', syncAuthState);
+    window.addEventListener('focus', syncAuthState);
+    document.addEventListener('visibilitychange', syncAuthState);
+
+    return () => {
+      window.removeEventListener('auth-cookie-changed', syncAuthState);
+      window.removeEventListener('focus', syncAuthState);
+      document.removeEventListener('visibilitychange', syncAuthState);
+    };
+  }, [currentPathname, firebaseUid, name, email, logIn]);
 
   return authState;
 }
 
 export function logout() {
-  localStorage.removeItem('user');
-  localStorage.removeItem('token');
-  window.location.href = '/';
+  removeAuthCookie();
+  useUserStore.getState().logOut();
+  if (typeof window !== 'undefined') {
+    window.location.href = '/';
+  }
 }

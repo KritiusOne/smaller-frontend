@@ -5,9 +5,10 @@ import { getLinksByUserId, getUserStats } from '@src/helpers/mocks/links';
 import { useRouter } from 'next/navigation';
 import { useUserStore } from '@src/zustand/userState';
 import { getURlsByUser } from '@/src/service/urlService';
+import { getAuthTokenPayload } from '@/src/helpers/auth/cookies';
 
 export default function ProfilePage() {
-  const { firebaseUid, email: userEmail, userLinks, setURLs, logIn } = useUserStore();
+  const { firebaseUid, name: userName, email: userEmail, userLinks, setURLs, logIn } = useUserStore();
   const [stats, setStats] = useState({
     totalLinks: 0,
     activeLinks: 0,
@@ -20,18 +21,30 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userInfo = localStorage.getItem('user');
-        const user = userInfo ? JSON.parse(userInfo) : null;
-        const id = user?.firebaseUid || null;
-        const name = user?.name || null;
-        const email = user?.email || null;
+        const tokenPayload = getAuthTokenPayload();
+        const tokenFirebaseUid =
+          typeof tokenPayload?.firebaseUid === 'string'
+            ? tokenPayload.firebaseUid
+            : typeof tokenPayload?.userId === 'string'
+            ? tokenPayload.userId
+            : typeof tokenPayload?.id === 'string'
+            ? tokenPayload.id
+            : typeof tokenPayload?.sub === 'string'
+            ? tokenPayload.sub
+            : null;
+        const tokenName = typeof tokenPayload?.name === 'string' ? tokenPayload.name : '';
+        const tokenEmail = typeof tokenPayload?.email === 'string' ? tokenPayload.email : '';
+
+        const id = firebaseUid || tokenFirebaseUid || null;
+        const resolvedName = userName || tokenName;
+        const resolvedEmail = userEmail || tokenEmail;
     
         if (!id) {
           router.push('/login');
           return;
         }
-        if(!firebaseUid || !name || !email){
-          logIn(firebaseUid || user.firebaseUid, name || '', email || '')
+        if(!firebaseUid || !userName || !userEmail){
+          logIn(id, resolvedName, resolvedEmail)
         }
         setLoading(true)
         const data = await getURlsByUser(id);
@@ -44,7 +57,7 @@ export default function ProfilePage() {
       }
     }
     fetchData();
-  }, [router, logIn, setURLs]);
+  }, [router, logIn, setURLs, firebaseUid, userName, userEmail]);
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('es-ES', {
