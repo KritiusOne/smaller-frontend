@@ -53,13 +53,21 @@ function CreateURL() {
       setError(validationError);
       return;
     }
+    try {
+      setIsSubmitting(true);
+  
+      const res = await createShortURL((originalURLRef.current as HTMLInputElement).value, alias);
 
-    setIsSubmitting(true);
-
-    await createShortURL((originalURLRef.current as HTMLInputElement).value, alias);
-
-    setSuccess('URL lista para crearse correctamente');
-    setIsSubmitting(false);
+      if(res.status >= 200 && res.status <= 299){
+        setSuccess('URL lista para crearse correctamente');
+        setError('');
+      }
+    } catch (error) {
+      setSuccess('')
+      setError('Error al crear la URL corta');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -111,10 +119,6 @@ function CreateURL() {
               </p>
             </div>
 
-            <div className="rounded-lg border border-indigo-100 bg-indigo-50 px-4 py-3">
-              <p className="text-xs uppercase tracking-wide text-indigo-700 font-semibold">Preview URL corta</p>
-              <p className="mt-1 text-indigo-900 font-medium break-all">https://smaller.link/{alias || 'default'}</p>
-            </div>
 
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">

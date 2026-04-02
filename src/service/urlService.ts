@@ -4,10 +4,10 @@ import { IURL } from "../types/IURL";
 import { getAuthTokenFromCookie } from "../helpers/auth/cookies";
 import { useUserStore } from "../zustand/userState";
 
-export const createShortURL = async(url: string, alias?: string)=> {
+export const createShortURL = async(url: string, alias?: string) => {
   const token = getAuthTokenFromCookie();
   const userId = useUserStore.getState().firebaseUid;
-  console.log("Creating short URL with:", { url, alias, userId, token });
+
   try {
     if(!userId){
       throw new Error('Usuario no autenticado');
@@ -24,8 +24,10 @@ export const createShortURL = async(url: string, alias?: string)=> {
         }
       }
     );
-    console.log(res)
-    return res.data;
+    return {
+      status: res.status,
+      data: res.data
+    };
   } catch (error) {
     console.error('Error creating short URL:', error);
     throw error;
