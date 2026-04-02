@@ -1,6 +1,5 @@
 import axios from "axios";
 import config from "../helpers/config";
-import { IURL } from "../types/IURL";
 import { getAuthTokenFromCookie } from "../helpers/auth/cookies";
 import { useUserStore } from "../zustand/userState";
 
@@ -30,25 +29,6 @@ export const createShortURL = async(url: string, alias?: string) => {
     };
   } catch (error) {
     console.error('Error creating short URL:', error);
-    throw error;
-  }
-}
-
-export const getURlsByUser = async(uId: string): Promise<IURL[]> => {
-  const token = getAuthTokenFromCookie();
-  try {
-    const res = await axios.get(
-      config.api.baseUrl + `/api/urls/user/${uId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
-    console.log(res.data);
-    return res.data.urls;
-  } catch (error) {
-    console.error('Error fetching URLs by user:', error);
     throw error;
   }
 }
