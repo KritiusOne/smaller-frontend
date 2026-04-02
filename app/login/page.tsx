@@ -6,12 +6,14 @@ import { LoginCredentials } from '@src/types/mockTypes';
 import { authService } from '@/src/service/authService';
 import { useUserStore } from '@/src/zustand/userState';
 import { setAuthCookie } from '@/src/helpers/auth/cookies';
+import { SignUpForm } from '@/src/components/SignUpForm';
 
 export default function LoginPage() {
   const [credentials, setCredentials] = useState<LoginCredentials>({
     email: '',
     password: '',
   });
+  const [showSignUp, setShowSignUp] = useState(false);
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -42,54 +44,71 @@ export default function LoginPage() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Smaller Links
           </h1>
-          <p className="text-gray-600">Inicia sesión para gestionar tus links</p>
+          <p className="text-gray-600">
+            {showSignUp ? 'Crea tu cuenta para comenzar' : 'Inicia sesión para gestionar tus links'}
+          </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
-              Correo electrónico
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              value={credentials.email}
-              onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              placeholder="tu@email.com"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
-              Contraseña
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              value={credentials.password}
-              onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-              className="w-full px-4 py-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-              placeholder="••••••••"
-            />
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {error}
+        {showSignUp ? (
+          <SignUpForm router={router}  />
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+                Correo electrónico
+              </label>
+              <input
+                id="email"
+                type="email"
+                required
+                value={credentials.email}
+                onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="tu@email.com"
+              />
             </div>
-          )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-          </button>
-        </form>
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+                Contraseña
+              </label>
+              <input
+                id="password"
+                type="password"
+                required
+                value={credentials.password}
+                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            </button>
+          </form>
+        )}
+
+        <button
+          type="button"
+          onClick={() => {
+            setError('');
+            setShowSignUp((prev) => !prev);
+          }}
+          className="w-full mt-4 text-sm text-indigo-600 hover:text-indigo-700 font-medium cursor-pointer"
+        >
+          {showSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
+        </button>
 
         <div className="mt-6 text-center">
           <a href="/" className="text-sm text-indigo-600 hover:text-indigo-700">

@@ -1,7 +1,8 @@
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword,  } from "firebase/auth";
 import config from "../helpers/config";
 import { initializeApp } from "firebase/app";
 import { IUser } from "../types/IUser";
+import axios from "axios";
 
 const firebaseApp = initializeApp(config.firebase);
 const auth = getAuth(firebaseApp);
@@ -34,6 +35,22 @@ async function getUser(uId: string, token: string) {
   return user;
 }
 
+async function SignUp(email: string, password: string, displayName: string) {
+  try {
+    const res = await axios.post(config.api.baseUrl + '/api/signUp', {
+      email,
+      password,
+      displayName
+    });
+    const response = await SignIn(email, password);
+
+    return response
+  } catch (error) {
+    throw new Error ('Error during sign up: ' + (error instanceof Error ? error.message : 'Unknown error'));
+  }
+}
+
 export const authService = {
   SignIn,
+  SignUp
 };
