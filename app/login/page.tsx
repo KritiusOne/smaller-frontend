@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import {useRouter} from 'next/navigation';
+import Link from 'next/link';
 import { LoginCredentials } from '@src/types/mockTypes';
 import { authService } from '@/src/service/authService';
 import { useUserStore } from '@/src/zustand/userState';
@@ -38,13 +39,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-indigo-100 px-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+    <div className="page-shell flex min-h-[calc(100vh-150px)] items-center justify-center py-10">
+      <div className="glass-panel w-full max-w-md p-8 sm:p-9">
+        <div className="mb-8 text-center">
+          <p className="kicker">Acceso</p>
+          <h1 className="mt-2 text-3xl font-bold text-[#1a1919]">
             Smaller Links
           </h1>
-          <p className="text-gray-600">
+          <p className="mt-2 text-[#4f4a4a]">
             {showSignUp ? 'Crea tu cuenta para comenzar' : 'Inicia sesión para gestionar tus links'}
           </p>
         </div>
@@ -54,7 +56,7 @@ export default function LoginPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[#353131]">
                 Correo electrónico
               </label>
               <input
@@ -63,13 +65,13 @@ export default function LoginPage() {
                 required
                 value={credentials.email}
                 onChange={(e) => setCredentials({ ...credentials, email: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="field"
                 placeholder="tu@email.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[#353131]">
                 Contraseña
               </label>
               <input
@@ -78,13 +80,13 @@ export default function LoginPage() {
                 required
                 value={credentials.password}
                 onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="field"
                 placeholder="••••••••"
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="rounded-lg border border-[#f99fb9] bg-[#fde7ed] px-4 py-3 text-sm text-[#600620]">
                 {error}
               </div>
             )}
@@ -92,7 +94,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-solid w-full py-3 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
             </button>
@@ -105,15 +107,15 @@ export default function LoginPage() {
             setError('');
             setShowSignUp((prev) => !prev);
           }}
-          className="w-full mt-4 text-sm text-indigo-600 hover:text-indigo-700 font-medium cursor-pointer"
+          className="mt-4 w-full cursor-pointer text-sm font-semibold text-[#2b3b34] hover:text-[#161d1a]"
         >
           {showSignUp ? '¿Ya tienes cuenta? Inicia sesión' : '¿No tienes cuenta? Regístrate'}
         </button>
 
         <div className="mt-6 text-center">
-          <a href="/" className="text-sm text-indigo-600 hover:text-indigo-700">
+          <Link href="/" className="text-sm font-semibold text-[#4f4a4a] hover:text-[#90092f]">
             ← Volver al inicio
-          </a>
+          </Link>
         </div>
       </div>
     </div>

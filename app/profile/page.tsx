@@ -30,42 +30,37 @@ export default async function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Encabezado de perfil */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Mi Perfil</h1>
-          <p className="text-sm text-gray-600 mt-1">{userEmail}</p>
-        </div>
+    <div className="page-shell py-8 sm:py-10">
+      <div className="mb-8 glass-panel px-6 py-7 sm:px-8">
+        <p className="kicker">Panel personal</p>
+        <h1 className="mt-2 text-3xl font-bold text-[#1a1919]">Mi perfil</h1>
+        <p className="mt-1 text-sm text-[#4f4a4a]">{userEmail}</p>
+      </div>
 
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-1">Total Links</p>
-            <p className="text-3xl font-bold text-indigo-600">{stats.totalLinks}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-1">Links Activos</p>
-            <p className="text-3xl font-bold text-green-600">{stats.activeLinks}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-1">Total Clicks</p>
-            <p className="text-3xl font-bold text-blue-600">{formatNumber(stats.totalClicks)}</p>
-          </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-600 mb-1">Promedio Clicks</p>
-            <p className="text-3xl font-bold text-purple-600">{formatNumber(stats.averageClicksPerLink)}</p>
-          </div>
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="glass-panel p-5">
+          <p className="text-sm text-[#696363]">Total links</p>
+          <p className="mt-1 text-3xl font-bold text-[#c00c3f]">{stats.totalLinks}</p>
         </div>
-
-        {/* Lista de Links */}
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900">Mis Links Acortados</h2>
-          </div>
-
-          <LinkList links={userLinks} />
+        <div className="glass-panel p-5">
+          <p className="text-sm text-[#696363]">Links activos</p>
+          <p className="mt-1 text-3xl font-bold text-[#41584e]">{stats.activeLinks}</p>
         </div>
+        <div className="glass-panel p-5">
+          <p className="text-sm text-[#696363]">Total clicks</p>
+          <p className="mt-1 text-3xl font-bold text-[#643557]">{formatNumber(stats.totalClicks)}</p>
+        </div>
+        <div className="glass-panel p-5">
+          <p className="text-sm text-[#696363]">Promedio clicks</p>
+          <p className="mt-1 text-3xl font-bold text-[#90092f]">{formatNumber(stats.averageClicksPerLink)}</p>
+        </div>
+      </div>
+
+      <div className="glass-panel overflow-hidden">
+        <div className="border-b border-[#b5b0b0] bg-[#f2dfd9] px-6 py-4">
+          <h2 className="text-xl font-semibold text-[#1a1919]">Mis links acortados</h2>
+        </div>
+        <LinkList links={userLinks} />
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { HeaderActions } from "./HeaderActions";
+import Link from "next/link";
 interface HeaderProps {
   showAuth?: boolean;
 }
@@ -6,18 +7,20 @@ interface HeaderProps {
 export function Header({ showAuth = true }: HeaderProps) {
 
   return (
-    <header className="bg-white shadow-sm sticky top-0 z-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <header className="sticky top-0 z-30 border-b border-[#b5b0b0] bg-[#f9efec]/95 backdrop-blur-md">
+      <div className="page-shell py-4">
         <div className="flex justify-between items-center">
-          <a href="/" className="flex items-center gap-3 hover:opacity-80 transition">
-            <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xl">S</span>
+          <Link href="/" className="flex items-center gap-3 transition hover:opacity-90">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#f00f4f]/35 bg-linear-to-br from-[#c00c3f] to-[#90092f] text-xl font-bold text-white shadow-[0_10px_20px_rgba(144,9,47,0.32)]">
+              S
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Smaller Links</h1>
-              <p className="text-xs text-gray-500">Acorta, comparte, analiza</p>
+              <h1 className="text-2xl font-bold leading-none text-[#1a1919]">Smaller</h1>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-[#4f4a4a]">
+                Acorta, comparte, analiza
+              </p>
             </div>
-          </a>
+          </Link>
           <HeaderActions showAuth={showAuth} />
         </div>
       </div>

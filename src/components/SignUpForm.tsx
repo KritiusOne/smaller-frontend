@@ -100,7 +100,7 @@ export const SignUpForm = ({ router }: SignUpFormProps) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+        <label htmlFor="email" className="mb-2 block text-sm font-semibold text-[#353131]">
           Correo electrónico
         </label>
         <input
@@ -109,16 +109,16 @@ export const SignUpForm = ({ router }: SignUpFormProps) => {
           required
           value={credentials.email}
           onChange={(e) => handleChange('email', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+          className="field"
           placeholder="tu@email.com"
         />
         {errors.email && (
-          <p className="mt-2 text-sm text-red-600">{errors.email}</p>
+          <p className="mt-2 text-sm text-[#600620]">{errors.email}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="displayName" className="block text-sm font-medium text-black mb-2">
+        <label htmlFor="displayName" className="mb-2 block text-sm font-semibold text-[#353131]">
           Nombre de usuario
         </label>
         <input
@@ -127,16 +127,16 @@ export const SignUpForm = ({ router }: SignUpFormProps) => {
           required
           value={credentials.displayName}
           onChange={(e) => handleChange('displayName', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+          className="field"
           placeholder="Tu nombre de usuario"
         />
         {errors.displayName && (
-          <p className="mt-2 text-sm text-red-600">{errors.displayName}</p>
+          <p className="mt-2 text-sm text-[#600620]">{errors.displayName}</p>
         )}
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+        <label htmlFor="password" className="mb-2 block text-sm font-semibold text-[#353131]">
           Contraseña
         </label>
         <input
@@ -145,22 +145,22 @@ export const SignUpForm = ({ router }: SignUpFormProps) => {
           required
           value={credentials.password}
           onChange={(e) => handleChange('password', e.target.value)}
-          className="w-full px-4 py-3 border border-gray-300 text-black rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+          className="field"
           placeholder="••••••••"
         />
         {errors.password && (
-          <p className="mt-2 text-sm text-red-600">{errors.password}</p>
+          <p className="mt-2 text-sm text-[#600620]">{errors.password}</p>
         )}
       </div>
 
       {submitError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+        <div className="rounded-lg border border-[#f99fb9] bg-[#fde7ed] px-4 py-3 text-sm text-[#600620]">
           {submitError}
         </div>
       )}
 
       {successMessage && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+        <div className="rounded-lg border border-[#c4d4cd] bg-[#f0f4f2] px-4 py-3 text-sm text-[#2b3b34]">
           {successMessage}
         </div>
       )}
@@ -168,7 +168,7 @@ export const SignUpForm = ({ router }: SignUpFormProps) => {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-indigo-600 text-white py-3 rounded-lg font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-solid w-full py-3 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {loading ? 'Creando cuenta...' : 'Crear cuenta'}
       </button>

@@ -1,10 +1,8 @@
 'use client';
 
-import { FormEvent, useMemo, useRef, useState } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import type { IURL } from '@src/types/IURL';
 import { createShortURL } from '@/src/service/urlService';
-
-type CreateURLFormData = Pick<IURL, 'originalURL' | 'alias'>;
 
 const aliasPattern = /^[a-zA-Z0-9-_]+$/;
 
@@ -61,7 +59,7 @@ function CreateURL() {
         setSuccess('URL lista para crearse correctamente');
         setError('');
       }
-    } catch (error) {
+    } catch {
       setSuccess('')
       setError('Error al crear la URL corta');
     } finally {
@@ -70,24 +68,25 @@ function CreateURL() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="page-shell py-10">
+      <div className="mx-auto max-w-3xl">
         <div className="mb-8 text-center">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Crear nueva URL</h1>
-          <p className="mt-2 text-gray-600">
+          <p className="kicker">Acortador</p>
+          <h1 className="mt-2 text-3xl font-bold text-[#1a1919] sm:text-4xl">Crear nueva URL</h1>
+          <p className="mt-2 text-[#4f4a4a]">
             Ingresa la URL original y, si quieres, define un alias personalizado.
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50">
-            <h2 className="text-xl font-semibold text-gray-900">Formulario de acortamiento</h2>
-            <p className="text-sm text-gray-600 mt-1">Solo necesitas URL original y alias opcional.</p>
+        <div className="glass-panel overflow-hidden">
+          <div className="border-b border-[#b5b0b0] bg-[#f2dfd9] px-6 py-5">
+            <h2 className="text-xl font-semibold text-[#1a1919]">Formulario de acortamiento</h2>
+            <p className="mt-1 text-sm text-[#4f4a4a]">Solo necesitas URL original y alias opcional.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
             <div>
-              <label htmlFor="originalURL" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="originalURL" className="mb-2 block text-sm font-semibold text-[#353131]">
                 URL original
               </label>
               <input
@@ -95,38 +94,38 @@ function CreateURL() {
                 type="url"
                 required
                 placeholder="https://ejemplo.com/mi-link"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="field"
                 ref={originalURLRef}
               />
-              <p className="mt-2 text-xs text-gray-500">Debe incluir el protocolo, por ejemplo: https://</p>
+              <p className="mt-2 text-xs text-[#696363]">Debe incluir el protocolo, por ejemplo: https://</p>
             </div>
 
             <div>
-              <label htmlFor="alias" className="block text-sm font-medium text-black mb-2">
+              <label htmlFor="alias" className="mb-2 block text-sm font-semibold text-[#353131]">
                 Alias (opcional)
               </label>
               <input
                 id="alias"
                 type="text"
                 placeholder="mi-campana-2026"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-black focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                className="field"
                 value={alias}
                 onChange={(e) => setAlias(e.target.value)}
               />
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-[#696363]">
                 Permitido: letras, numeros, guiones (-) y guion bajo (_).
               </p>
             </div>
 
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+              <div className="rounded-lg border border-[#f99fb9] bg-[#fde7ed] px-4 py-3 text-sm text-[#600620]">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">
+              <div className="rounded-lg border border-[#c4d4cd] bg-[#f0f4f2] px-4 py-3 text-sm text-[#2b3b34]">
                 {success}
               </div>
             )}
@@ -134,14 +133,14 @@ function CreateURL() {
             <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
               <a
                 href="/profile"
-                className="px-6 py-3 text-center rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition"
+                className="btn-outline px-6 py-3 text-center text-sm font-semibold"
               >
                 Cancelar
               </a>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn-solid px-6 py-3 text-sm disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? 'Creando URL...' : 'Crear URL'}
               </button>

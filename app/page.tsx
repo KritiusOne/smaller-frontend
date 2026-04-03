@@ -1,18 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TrendingLink } from '@src/types/mockTypes';
 import { getTrendingLinks } from '@src/helpers/mocks/links';
 import { useAuth } from '@src/hooks/useAuth';
 
 export default function Home() {
-  const [trendingLinks, setTrendingLinks] = useState<TrendingLink[]>([]);
+  const [trendingLinks] = useState<TrendingLink[]>(() => getTrendingLinks(10));
   const { isLoggedIn } = useAuth();
-
-  useEffect(() => {
-    const links = getTrendingLinks(10);
-    setTrendingLinks(links);
-  }, []);
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat('es-ES').format(num);
@@ -27,65 +22,84 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-      {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-        <h2 className="text-5xl font-bold text-gray-900 mb-4">
-          Los Links Más <span className="text-indigo-600">Populares</span>
-        </h2>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Descubre los links acortados que están en tendencia y obtén más clicks
-        </p>
+    <div className="pb-16">
+      <section className="page-shell py-12 sm:py-16">
+        <div className="glass-panel relative overflow-hidden px-6 py-10 sm:px-10 sm:py-14">
+          <div className="pointer-events-none absolute -right-18 -top-18 h-52 w-52 rounded-full bg-[#fccfdc] blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-[#c4d4cd] blur-2xl" />
+          <div className="relative">
+            <p className="kicker fade-up" style={{ animationDelay: '40ms' }}>
+              Ranking comunitario en vivo
+            </p>
+            <h2 className="section-title mt-3 max-w-3xl fade-up" style={{ animationDelay: '120ms' }}>
+              Los links que estan capturando atencion hoy.
+            </h2>
+            <p className="mt-4 max-w-2xl text-[1.05rem] text-[#4f4a4a] fade-up" style={{ animationDelay: '200ms' }}>
+              Descubre que contenidos convierten mejor, analiza sus cifras y toma ideas para tu proxima campana.
+            </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3 fade-up" style={{ animationDelay: '260ms' }}>
+              <a href="/url" className="btn-solid px-5 py-3 text-sm">
+                Crear nuevo link
+              </a>
+              {!isLoggedIn && (
+                <a href="/login" className="btn-outline px-5 py-3 text-sm font-semibold">
+                  Unirme a Smaller
+                </a>
+              )}
+              <span className="rounded-full border border-[#b5b0b0] bg-[#f9efec] px-3 py-1 text-xs font-semibold uppercase tracking-[0.08em] text-[#4f4a4a]">
+                Top {trendingLinks.length} en tendencia
+              </span>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* Trending Links Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-blue-50">
-            <div className="flex items-center justify-between">
+      <main className="page-shell">
+        <div className="glass-panel overflow-hidden">
+          <div className="border-b border-[#b5b0b0] bg-[#f2dfd9] px-6 py-5 sm:px-8">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <h3 className="text-2xl font-bold text-gray-900">🔥 Trending Ahora</h3>
-                <p className="text-sm text-gray-600 mt-1">Los links más clickeados de la comunidad</p>
+                <p className="kicker">Pulso de la semana</p>
+                <h3 className="mt-1 text-2xl font-bold text-[#1a1919]">Trending ahora</h3>
+                <p className="mt-1 text-sm text-[#4f4a4a]">Los links mas cliqueados de la comunidad</p>
               </div>
-              <div className="text-sm text-gray-500">
-                Top {trendingLinks.length} links
+              <div className="rounded-xl border border-[#b5b0b0] bg-white px-4 py-2 text-sm font-semibold text-[#4f4a4a]">
+                Actualizado: {formatDate(new Date())}
               </div>
             </div>
           </div>
 
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-[#cecaca]">
             {trendingLinks.map((link, index) => (
               <div
                 key={link.id}
-                className="p-6 hover:bg-gray-50 transition-colors group"
+                className="group p-6 transition-colors hover:bg-[#f2dfd9] sm:p-7"
               >
                 <div className="flex items-start gap-6">
-                  {/* Ranking Badge */}
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <div
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg ${
+                      className={`flex h-12 w-12 items-center justify-center rounded-2xl text-base font-bold ${
                         index === 0
-                          ? 'bg-yellow-100 text-yellow-700'
+                            ? 'bg-[#fccfdc] text-[#600620]'
                           : index === 1
-                          ? 'bg-gray-200 text-gray-700'
+                            ? 'bg-[#e6e5e5] text-[#353131]'
                           : index === 2
-                          ? 'bg-orange-100 text-orange-700'
-                          : 'bg-indigo-50 text-indigo-700'
+                            ? 'bg-[#eddee9] text-[#43233a]'
+                            : 'bg-[#e2e9e6] text-[#2b3b34]'
                       }`}
                     >
                       #{index + 1}
                     </div>
                   </div>
 
-                  {/* Link Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <h4 className="text-lg font-semibold text-gray-900 mb-1 group-hover:text-indigo-600 transition">
+                        <h4 className="mb-1 text-lg font-semibold text-[#1a1919] transition group-hover:text-[#90092f]">
                           {link.title || 'Sin título'}
                         </h4>
                         {link.description && (
-                          <p className="text-sm text-gray-600 mb-3">{link.description}</p>
+                          <p className="mb-3 text-sm text-[#4f4a4a]">{link.description}</p>
                         )}
                         
                         <div className="flex items-center gap-4 text-sm">
@@ -93,7 +107,7 @@ export default function Home() {
                             href={link.shortUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-indigo-600 hover:text-indigo-700 font-medium flex items-center gap-1"
+                            className="flex items-center gap-1 font-semibold text-[#c00c3f] hover:text-[#90092f]"
                           >
                             {link.shortUrl}
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +116,7 @@ export default function Home() {
                           </a>
                         </div>
 
-                        <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+                        <div className="mt-3 flex items-center gap-4 text-xs text-[#696363]">
                           <div className="flex items-center gap-1">
                             <span>👤</span>
                             <span>{link.user.name}</span>
@@ -114,23 +128,22 @@ export default function Home() {
                         </div>
                       </div>
 
-                      {/* Stats */}
-                      <div className="text-right flex-shrink-0">
-                        <div className="text-3xl font-bold text-indigo-600 mb-1">
+                      <div className="shrink-0 rounded-xl border border-[#b5b0b0] bg-[#f9efec] px-4 py-3 text-right">
+                        <div className="mb-1 text-3xl font-bold text-[#c00c3f]">
                           {formatNumber(link.clicks)}
                         </div>
-                        <div className="text-xs text-gray-500 mb-3">clicks totales</div>
+                        <div className="mb-3 text-xs text-[#696363]">clicks totales</div>
                         
-                        <div className="space-y-1 text-xs">
+                        <div className="space-y-1 text-xs font-medium">
                           <div className="flex items-center justify-end gap-2">
-                            <span className="text-gray-500">Última semana:</span>
-                            <span className="font-semibold text-green-600">
+                            <span className="text-[#696363]">Ultima semana:</span>
+                            <span className="text-[#41584e]">
                               +{formatNumber(link.clicksLastWeek)}
                             </span>
                           </div>
                           <div className="flex items-center justify-end gap-2">
-                            <span className="text-gray-500">Último mes:</span>
-                            <span className="font-semibold text-blue-600">
+                            <span className="text-[#696363]">Ultimo mes:</span>
+                            <span className="text-[#643557]">
                               +{formatNumber(link.clicksLastMonth)}
                             </span>
                           </div>
@@ -144,18 +157,17 @@ export default function Home() {
           </div>
         </div>
 
-        {/* CTA Section */}
         {!isLoggedIn && (
-          <div className="mt-12 text-center bg-gradient-to-r from-indigo-600 to-blue-600 rounded-2xl p-12 text-white">
-            <h3 className="text-3xl font-bold mb-4">¿Quieres crear tus propios links?</h3>
-            <p className="text-lg mb-6 opacity-90">
-              Únete a nuestra comunidad y comienza a acortar tus URLs hoy mismo
+          <div className="mt-10 overflow-hidden rounded-2xl border border-[#f00f4f] bg-linear-to-r from-[#c00c3f] to-[#90092f] p-10 text-white shadow-[0_20px_42px_rgba(144,9,47,0.34)]">
+            <h3 className="text-3xl font-bold">Quieres crear tus propios links?</h3>
+            <p className="mt-3 max-w-2xl text-[1.03rem] text-[#fccfdc]">
+              Unete a la comunidad y construye URLs cortas con estilo, rapidez y metricas accionables.
             </p>
             <a
               href="/login"
-              className="inline-block px-8 py-3 bg-white text-indigo-600 rounded-lg font-semibold hover:bg-gray-100 transition"
+              className="mt-6 inline-block rounded-xl border border-white/40 bg-white px-8 py-3 font-semibold text-[#90092f] transition hover:-translate-y-0.5 hover:bg-[#f9efec]"
             >
-              Comenzar ahora
+              Empezar ahora
             </a>
           </div>
         )}
