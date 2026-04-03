@@ -47,7 +47,6 @@ function CreateURL() {
     if(!originalURLRef.current){
       return;
     }
-    console.log('Valor del input originalURL:', (originalURLRef.current as HTMLInputElement).value);
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
