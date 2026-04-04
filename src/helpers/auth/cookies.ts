@@ -1,3 +1,5 @@
+import config from "../config";
+
 export const AUTH_COOKIE_NAME = 'auth_token';
 
 export type AuthTokenPayload = {
@@ -17,6 +19,21 @@ type SetAuthCookieOptions = {
   secure?: boolean;
 };
 
+const DEFAULT_AUTH_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7;
+
+function getDefaultAuthCookieMaxAgeSeconds(): number {
+  const envValue = config.app.authCookieMaxAgeSeconds;
+  if (!envValue) {
+    return DEFAULT_AUTH_COOKIE_MAX_AGE_SECONDS;
+  }
+
+  if (!Number.isFinite(envValue) || envValue <= 0) {
+    return DEFAULT_AUTH_COOKIE_MAX_AGE_SECONDS;
+  }
+
+  return Math.floor(envValue);
+}
+
 export function setAuthCookie(
   token: string,
   options: SetAuthCookieOptions = {}
@@ -26,7 +43,7 @@ export function setAuthCookie(
   }
 
   const {
-    maxAgeSeconds = 60 * 60 * 24 * 7,
+    maxAgeSeconds = getDefaultAuthCookieMaxAgeSeconds(),
     path = '/',
     sameSite = 'lax',
     secure = typeof window !== 'undefined' && window.location.protocol === 'https:',

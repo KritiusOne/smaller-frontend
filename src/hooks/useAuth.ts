@@ -1,8 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getAuthTokenPayload, hasAuthCookie, removeAuthCookie } from '../helpers/auth/cookies';
+import { getAuthTokenPayload, hasAuthCookie, removeAuthCookie, setAuthCookie } from '../helpers/auth/cookies';
 import { useUserStore } from '../zustand/userState';
+import { onIdTokenChanged } from 'firebase/auth';
+import { auth } from '../service/authService';
+import config from '../helpers/config';
 
 export interface AuthState {
   isLoggedIn: boolean;
@@ -23,6 +26,12 @@ export function useAuth(currentPathname?: string): AuthState {
   });
 
   useEffect(() => {
+    const authCookieMaxAgeSeconds =
+      Number.isFinite(config.app.authCookieMaxAgeSeconds) && config.app.authCookieMaxAgeSeconds > 0
+        ? config.app.authCookieMaxAgeSeconds
+        : 30;
+    const refreshIntervalMs = Math.max(5000, Math.floor((authCookieMaxAgeSeconds * 1000) / 2));
+
     const syncAuthState = () => {
       const hasCookie = hasAuthCookie();
       const tokenPayload = hasCookie ? getAuthTokenPayload() : null;
@@ -44,16 +53,55 @@ export function useAuth(currentPathname?: string): AuthState {
       });
     };
 
+    const refreshCurrentUserToken = async () => {
+      const currentUser = auth.currentUser;
+
+      if (!currentUser) {
+        return;
+      }
+
+      const token = await currentUser.getIdToken(true);
+      setAuthCookie(token);
+      syncAuthState();
+    };
+
+    const handleSessionActivity = () => {
+      if (document.visibilityState === 'hidden') {
+        return;
+      }
+
+      void refreshCurrentUserToken();
+    };
+
     syncAuthState();
 
+    const unsubscribeAuth = onIdTokenChanged(auth, async (user) => {
+      if (user) {
+        const token = await user.getIdToken(true);
+        setAuthCookie(token);
+        syncAuthState();
+      } else {
+        removeAuthCookie();
+        syncAuthState();
+      }
+    });
+
+    const refreshTimer = window.setInterval(() => {
+      void refreshCurrentUserToken();
+    }, refreshIntervalMs);
+
+    void refreshCurrentUserToken();
+
     window.addEventListener('auth-cookie-changed', syncAuthState);
-    window.addEventListener('focus', syncAuthState);
-    document.addEventListener('visibilitychange', syncAuthState);
+    window.addEventListener('focus', handleSessionActivity);
+    document.addEventListener('visibilitychange', handleSessionActivity);
 
     return () => {
+      unsubscribeAuth();
+      window.clearInterval(refreshTimer);
       window.removeEventListener('auth-cookie-changed', syncAuthState);
-      window.removeEventListener('focus', syncAuthState);
-      document.removeEventListener('visibilitychange', syncAuthState);
+      window.removeEventListener('focus', handleSessionActivity);
+      document.removeEventListener('visibilitychange', handleSessionActivity);
     };
   }, [currentPathname, firebaseUid, name, email, logIn]);
 

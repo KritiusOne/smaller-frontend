@@ -5,7 +5,7 @@ import { IUser } from "../types/IUser";
 import axios from "axios";
 
 const firebaseApp = initializeApp(config.firebase);
-const auth = getAuth(firebaseApp);
+export const auth = getAuth(firebaseApp);
   
 function SignIn(email: string, password: string) {
   const userInfo = signInWithEmailAndPassword(auth, email, password)
