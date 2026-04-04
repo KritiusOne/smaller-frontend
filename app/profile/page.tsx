@@ -4,8 +4,18 @@ import { IURL } from '@/src/types/IURL';
 import { getURlsByUser } from '@/src/service/urlService.server';
 import { getServerCookie } from '@/src/helpers/auth/getServerCookie';
 
-export default async function ProfilePage() {
+const updateStats = (links: IURL[]) => {
   const stats = {
+    totalLinks: links.length,
+    activeLinks: links.length, // Assuming all links are active for now, you can adjust this based on your logic
+    totalClicks: links.reduce((sum, link) => sum + (link.views || 0), 0),
+    averageClicksPerLink: links.length > 0 ? Math.round(links.reduce((sum, link) => sum + (link.views || 0), 0) / links.length) : 0,
+  };
+  return stats;
+
+}
+export default async function ProfilePage() {
+  let stats = {
     totalLinks: 0,
     activeLinks: 0,
     totalClicks: 0,
@@ -21,6 +31,7 @@ export default async function ProfilePage() {
   let userLinks: IURL[] = [];
   try {
     userLinks = await getURlsByUser(firebaseUid, token);
+    stats = {...updateStats(userLinks)};
   } catch (error) {
     console.error('Error fetching user data:', error);
   }
