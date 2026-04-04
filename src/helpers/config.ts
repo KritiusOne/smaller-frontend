@@ -24,7 +24,7 @@ const config = {
     environment: process.env.NODE_ENV || 'development',
     isDevelopment: process.env.NODE_ENV === 'development',
     isProduction: process.env.NODE_ENV === 'production',
-    authCookieMaxAgeSeconds: parseInt(process.env.NEXT_PUBLIC_AUTH_COOKIE_MAX_AGE_SECONDS || '30', 10),
+    authCookieMaxAgeSeconds: parseInt(process.env.NEXT_PUBLIC_AUTH_COOKIE_MAX_AGE_SECONDS || '3600', 10),
   },
 };
 
