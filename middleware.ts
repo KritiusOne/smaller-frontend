@@ -17,16 +17,13 @@ export function middleware(request: NextRequest) {
 	if (isRouteMatch(pathname, PROTECTED_ROUTES) && !isAuthenticated) {
 		const loginUrl = new URL('/login', request.url);
 		loginUrl.searchParams.set('next', pathname);
-    console.log("Match with protected route and user isn't logged")
 		return NextResponse.redirect(loginUrl);
 	}
 
 	if (isRouteMatch(pathname, AUTH_ROUTES) && isAuthenticated) {
-    console.log("Match with auth route and user is logged in")
 		return NextResponse.redirect(new URL('/profile', request.url));
 	}
 
-  console.log("No match with protected or auth route, continue")
 	return NextResponse.next();
 }
 
