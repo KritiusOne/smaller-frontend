@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getAuthTokenPayload, hasAuthCookie, removeAuthCookie, setAuthCookie } from '../helpers/auth/cookies';
 import { useUserStore } from '../zustand/userState';
-import { onIdTokenChanged } from 'firebase/auth';
+import { onIdTokenChanged, signOut } from 'firebase/auth';
 import { auth } from '../service/authService';
 import config from '../helpers/config';
 
@@ -108,10 +108,15 @@ export function useAuth(currentPathname?: string): AuthState {
   return authState;
 }
 
-export function logout() {
-  removeAuthCookie();
-  useUserStore.getState().logOut();
-  if (typeof window !== 'undefined') {
-    window.location.href = '/';
+export async function logout() {
+  try {
+    await signOut(auth);
+  } finally {
+    removeAuthCookie();
+    useUserStore.getState().logOut();
+
+    if (typeof window !== 'undefined') {
+      window.location.href = '/';
+    }
   }
 }
