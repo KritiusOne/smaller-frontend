@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { IURL } from '@/src/types/IURL';
+import config from '../helpers/config';
 
 type LinkListProps = {
   links: IURL[];
@@ -39,7 +40,7 @@ export const LinkList = ({ links }: LinkListProps) => {
                     rel="noopener noreferrer"
                     className="font-semibold text-[#c00c3f] hover:text-[#90092f]"
                   >
-                    {link.shortURL}
+                    {`${config.app.baseURL}/${link.shortURL}`}
                   </a>
                 </div>
               </div>

@@ -56,7 +56,7 @@ function CreateURL() {
       const res = await createShortURL((originalURLRef.current as HTMLInputElement).value, alias);
 
       if(res.status >= 200 && res.status <= 299){
-        setSuccess('URL lista para crearse correctamente');
+        setSuccess('URL creada correctamente correctamente');
         setError('');
       }
     } catch {

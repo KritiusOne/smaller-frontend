@@ -25,6 +25,7 @@ const config = {
     isDevelopment: process.env.NODE_ENV === 'development',
     isProduction: process.env.NODE_ENV === 'production',
     authCookieMaxAgeSeconds: parseInt(process.env.NEXT_PUBLIC_AUTH_COOKIE_MAX_AGE_SECONDS || '3600', 10),
+    baseURL: process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
   },
 };
 
